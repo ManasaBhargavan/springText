@@ -1,0 +1,297 @@
+*****************************************************************************
+
+TRIANGLE.JAVA
+
+package com.test;
+
+public class Triangle {
+
+	private int sides;
+	private String triangleName;
+	
+	public Triangle() {
+		super();
+	}
+	
+	
+	public Triangle(int sides, String triangleName) {
+		super();
+		this.sides = sides;
+		this.triangleName = triangleName;
+	}
+
+
+	public String getTriangleName() {
+		return triangleName;
+	}
+
+	public void setTriangleName(String triangleName) {
+		this.triangleName = triangleName;
+	}
+	
+
+	public int getSides() {
+		return sides;
+	}
+
+	public void setSides(int sides) {
+		this.sides = sides;
+	}
+
+	public void draw()
+	{
+		System.out.println("Triangle draw "+triangleName+" "+sides);
+	}
+}
+
+XML FILE
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+     http://www.springframework.org/schema/context
+     http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+	
+<bean id="triangle" class="com.test.Triangle">
+	<property name="triangleName" value="Equilateral"></property>
+	<property name="sides" value="3"></property>
+</bean>
+<bean id="triangle1" class="com.test.Triangle">
+<constructor-arg type="String" value="Equilateral"/>
+<constructor-arg type="int" value="4" />
+
+</bean>	 
+
+</beans>
+
+TEST APPLICATION
+
+package com.test;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+public class TestApp {
+
+	public static void main(String[] args) {
+		
+		ApplicationContext ctx=new ClassPathXmlApplicationContext("spring.xml");
+		Triangle obj1=(Triangle) ctx.getBean("triangle1");
+		obj1.draw();
+		
+		
+
+
+	}
+
+********************************************************************************************************************
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+     http://www.springframework.org/schema/context
+     http://www.springframework.org/schema/context/spring-context-3.0.xsd" default-init-method="init" default-destroy-method="destroy">
+	
+<bean id="triangle" class="com.test.Triangle" />
+
+</beans>
+
+package com.test;
+
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
+
+
+
+public class Triangle implements InitializingBean,DisposableBean{
+
+
+	public void draw()
+	{
+		System.out.println("Triangle draw ");
+	}
+
+	public void init()  {
+		System.out.println("Init method called");
+	}
+
+
+	public void destroy() {
+		System.out.println("Destroy method called");
+		
+	}
+
+	
+	
+}
+
+
+***********************************************************************************************************************
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+     http://www.springframework.org/schema/context
+     http://www.springframework.org/schema/context/spring-context-3.0.xsd" >
+	
+<bean id="triangle" class="com.test.Triangle" />
+
+</beans>	
+
+
+
+package com.test;
+
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
+
+
+
+public class Triangle implements InitializingBean,DisposableBean{
+
+
+	public void draw()
+	{
+		System.out.println("Triangle draw ");
+	}
+
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		System.out.println("Init called");
+		
+	}
+@Override
+public void destroy() throws Exception {
+	System.out.println("Destroy called");
+}
+	
+	
+}
+**************************************************************************************************************************************
+
+BFPP
+
+package com.test;
+
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+
+public class BFPP implements BeanFactoryPostProcessor {
+
+	@Override
+	public void postProcessBeanFactory(ConfigurableListableBeanFactory arg0)
+			throws BeansException {
+		System.out.println("BFPP method called");
+		
+	}
+
+}
+
+BPP
+
+package com.test;
+
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanPostProcessor;
+
+public class BPP implements BeanPostProcessor{
+
+	@Override
+	public Object postProcessAfterInitialization(Object obj, String arg1)
+			throws BeansException {
+		System.out.println(" BPP AFTER INIT IS CALLED");
+		return obj;
+	}
+
+	@Override
+	public Object postProcessBeforeInitialization(Object obj, String arg1)
+			throws BeansException {
+		System.out.println("BPP BEFORE INIT CALLED");
+		return obj;
+	}
+
+}
+
+XML
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+     http://www.springframework.org/schema/context
+     http://www.springframework.org/schema/context/spring-context-3.0.xsd" default-init-method="init" default-destroy-method="destroy">
+	
+<bean id="triangle" class="com.test.Triangle">
+</bean>
+
+
+<bean class="com.test.BPP">
+</bean>
+
+<bean class="com.test.BFPP">
+</bean>
+</beans>
+
+TESTAPP AND TRIANGLE REMAINS SAME
+
+OUTPUT
+
+BFPP method called
+BPP BEFORE INIT CALLED
+Init method called
+ BPP AFTER INIT IS CALLED
+Triangle draw 
+Destroy called 
+*************************************************************************************************************************
+
+AWARE METHOD
+
+TRIANGLE.JAVA
+
+package com.test;
+
+import org.springframework.beans.factory.BeanNameAware;
+
+
+
+
+public class Triangle implements BeanNameAware{
+
+
+	public void draw()
+	{
+		System.out.println("Triangle draw ");
+	}
+	public void init()
+	{
+		System.out.println("Init method called");
+	}
+	public void destroy()
+	{
+		System.out.println("Destroy called ");
+	}
+	@Override
+	public void setBeanName(String arg0) {
+		System.out.println("Bean name aware= "+arg0);
+		
+	}
+
+	
+}
+
+OUTPUT:
+
+BFPP method called
+Bean name aware= triangle
+BPP BEFORE INIT CALLED
+Init method called
+ BPP AFTER INIT IS CALLED
+Triangle draw 
+Destroy called 
+
+
+
